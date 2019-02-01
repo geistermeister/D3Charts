@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import * as d3 from 'd3'
+import '../css/animations.css'
 
 export default class LineCHart extends Component {
 
@@ -8,7 +9,7 @@ export default class LineCHart extends Component {
   }
 
   DrawChart = () => {
-    const margin = {top: 20, right: 30, bottom: 45, left: 50}
+    const margin = {top: 40, right: 30, bottom: 45, left: 50}
     const width = this.props.width - margin.left - margin.right
     const height = this.props.height - margin.top - margin.bottom
     let parseTime = d3.timeParse('%d.%m.%Y')
@@ -37,7 +38,7 @@ export default class LineCHart extends Component {
     })
 
     // manipulate svg and create group
-    let svg = d3.select('svg')
+    let svg = d3.select('.svgLineChart')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
@@ -56,8 +57,8 @@ export default class LineCHart extends Component {
       }
 
       let x = d3.scaleTime()
-      .domain(d3.extent(buffer, d => d[0]))
-      .range([0, width])
+        .domain(d3.extent(buffer, d => d[0]))
+        .range([0, width])
 
 
       let y = d3.scaleLinear()
@@ -89,7 +90,7 @@ export default class LineCHart extends Component {
             .attr('fill', colors[i-1])
             .text(keys[i])
             .attr('x', width/2)
-            .attr('y', 5)
+            .attr('y', -20)
         })
         .on('mouseout', () => {
           svg.select('.title').remove()
@@ -119,6 +120,6 @@ export default class LineCHart extends Component {
   }
 
   render() {
-    return <svg></svg>
+    return <svg className="svgLineChart"></svg>
   }
 }
