@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import LineChart from './Components/linechart'
 import BarChart from './Components/barchart'
 import Data from './Data/example'
+import './css/animations.css'
 
 export default class App extends Component {
   height = 500

@@ -1,20 +1,29 @@
-@keyframes showPoints {
-  from {opacity: 0;}
-  to {opacity: 1}
+@keyframes animGraph {
+  to {stroke-dashoffset: 0;}
 }
 
-@keyframes drawGraph {
-  to {stroke-dashoffset: 0}
+@keyframes animPoints {
+  to {opacity: 1;}
 }
 
 .line {
   stroke-dasharray: 1500;
   stroke-dashoffset: 1500;
-  animation: drawGraph 3s linear forwards;
+  animation: animGraph 2s linear forwards;
+  -webkit-animation: animGraph 2s linear forwards;
+  -moz-animation: animGraph 2s linear forwards;
+  -o-animation: animGraph 2s linear forwards;
 }
 
-.dot {
+ .dot {
   opacity: 0;
-  animation: showPoints 1s linear forwards;
-  animation-delay: 2s;
-}
+  animation: animPoints 0.5s linear forwards;
+  -webkit-animation: animPoints 0.5s linear forwards;
+  -moz-animation: animPoints 0.5s linear forwards;
+  -o-animation: showPoanimPointsints 0.5s linear forwards;
+  animation-delay: 1.5s;
+  -webkit-animation-delay: 1.5s;
+  -moz-animation-delay: 1.5s;
+  -o-animation-delay: 1.5s;
+} 
+

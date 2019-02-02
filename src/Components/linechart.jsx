@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import * as d3 from 'd3'
-import '../css/animations.css'
 
 export default class LineCHart extends Component {
 
@@ -13,8 +12,7 @@ export default class LineCHart extends Component {
     const width = this.props.width - margin.left - margin.right
     const height = this.props.height - margin.top - margin.bottom
     let parseTime = d3.timeParse('%d.%m.%Y')
-    // IAM, DCI, HOLDING
-    let colors = ["#D31409", "#0068B4", "#E05206"]
+    let colors = ['orange', 'blue', 'red', 'yellow', 'green']
     let buffer = []
     let bufferline
     let maxX = 0
@@ -45,6 +43,16 @@ export default class LineCHart extends Component {
       .attr('transform',
             `translate(${margin.left},${margin.top})`)
   
+    let x = d3.scaleTime()
+      .domain(d3.extent(buffer, d => d[0]))
+      .range([0, width])
+
+    
+    let y = d3.scaleLinear()
+      .domain([0, maxX])
+      .range([height, 0])
+
+
     // splits data array into arrays
     // e.g. array[date, value1, value2] = array[date, value1] & array[date, value2] 
     for(let i = 1; i < buffer[0].length; i++){
@@ -55,15 +63,6 @@ export default class LineCHart extends Component {
         fusionArray[1] = buffer[j][i]
         bufferline.push(fusionArray)
       }
-
-      let x = d3.scaleTime()
-        .domain(d3.extent(buffer, d => d[0]))
-        .range([0, width])
-
-
-      let y = d3.scaleLinear()
-        .domain([0, maxX])
-        .range([height, 0])
 
       // define the line
       let line = d3.line()
@@ -79,7 +78,7 @@ export default class LineCHart extends Component {
         .attr('class', 'line')
         .attr('d', line)
         .attr('fill', 'none')
-        .attr('stroke', colors[i-1])
+        .attr('stroke', () => (i-1 > colors.length) ? colors[colors.length -1] : colors[i-1])
         .attr('stroke-width', '1.5')
         // append text for line when mouse over
         .on('mouseover', () => {
@@ -104,22 +103,36 @@ export default class LineCHart extends Component {
         .attr('cx', d => x(d[0]))
         .attr('cy', d => y(d[1]))
         .attr('r', '3')
-        .attr('fill', colors[i-1])  
-
-      // add the x axis
-      svg.append('g')
-        .attr('transform', `translate(0,${height})`)
-        .call(d3.axisBottom(x).tickFormat(d3.timeFormat('%d.%m.%Y')))
-
-      // add the y axis
-      svg.append('g')
-        .call(d3.axisLeft(y))
-
+        .attr('fill', () => (i-1 > colors.length) ? colors[colors.length -1] : colors[i-1])
+        // append text for line when mouse over
+        .on('mouseover', () => {
+          svg.append('text')
+            .attr('class', 'title')
+            .attr('font-family', 'sans-serif')
+            .attr('font-weight', 'bold')
+            .attr('fill', colors[i-1])
+            .text(keys[i])
+            .attr('x', width/2)
+            .attr('y', -20)
+        })
+        .on('mouseout', () => {
+          svg.select('.title').remove()
+        })  
     } 
+
+
+    // add the x axis
+    svg.append('g')
+      .attr('transform', `translate(0,${height})`)
+      .call(d3.axisBottom(x).tickFormat(d3.timeFormat('%d.%m.%Y')))
+
+    // add the y axis
+    svg.append('g')
+      .call(d3.axisLeft(y))
     
   }
 
   render() {
-    return <svg className="svgLineChart"></svg>
+    return <svg className='svgLineChart'></svg>
   }
 }

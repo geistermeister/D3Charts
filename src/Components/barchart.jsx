@@ -50,10 +50,10 @@ export default class LineCHart extends Component {
       .attr('transform', `translate(0,${height})`)
       .call(d3.axisBottom(x).tickFormat(d3.timeFormat('%d.%m.%Y')))
       .selectAll('text')
-      .attr("transform", "rotate(-90)")
-      .style("text-anchor", "end")
-      .attr("dx", "-.8em")
-      .attr("dy", "-.55em")
+      .attr('transform', 'rotate(-90)')
+      .style('text-anchor', 'end')
+      .attr('dx', '-.8em')
+      .attr('dy', '-.55em')
 
 
     // add the y axis
@@ -61,14 +61,14 @@ export default class LineCHart extends Component {
      .call(d3.axisLeft(y))
 
     // add the bars
-    svg.selectAll("rect")
+    svg.selectAll('rect')
       .data(buffer)
-      .enter().append("rect")
-      .style("fill", "steelblue")
-      .attr("x", d => x(d[0]))
-      .attr("y", d => y(d[1]) )
-      .attr("width", x.bandwidth())
-      .attr("height", d => height - y(d[1]))
+      .enter().append('rect')
+      .style('fill', 'steelblue')
+      .attr('x', d => x(d[0]))
+      .attr('y', d => y(d[1]))
+      .attr('width', x.bandwidth())
+      .attr('height', d => height - y(d[1]))
       // append text for line when mouse over
       .on('mouseover', () => {
         svg.append('text')
@@ -87,6 +87,6 @@ export default class LineCHart extends Component {
   }
 
   render() {
-    return <svg className="svgBarChart"></svg>
+    return <svg className='svgBarChart'></svg>
   }
 }
