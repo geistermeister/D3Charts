@@ -28,9 +28,9 @@ export default class LineCHart extends Component {
         if(typeof buffer[i][j] != 'number'){
           // number string into int
           buffer[i][j] = parseInt(buffer[i][j])
-          if(buffer[i][j] > maxX){
-            maxX = buffer[i][j]
-          }
+        }
+        if(buffer[i][j] > maxX){
+          maxX = buffer[i][j]
         }
       }
     })
@@ -119,7 +119,6 @@ export default class LineCHart extends Component {
           svg.select('.title').remove()
         })  
     } 
-
 
     // add the x axis
     svg.append('g')
