@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import * as d3 from 'd3'
 
-export default class LineCHart extends Component {
+export default class LineChart extends Component {
 
   componentDidMount() {
     this.DrawChart()

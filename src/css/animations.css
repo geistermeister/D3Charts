@@ -15,12 +15,12 @@
   -o-animation: animGraph 2s linear forwards;
 }
 
- .dot {
+.dot {
   opacity: 0;
   animation: animPoints 0.5s linear forwards;
   -webkit-animation: animPoints 0.5s linear forwards;
   -moz-animation: animPoints 0.5s linear forwards;
-  -o-animation: showPoanimPointsints 0.5s linear forwards;
+  -o-animation: animPoints 0.5s linear forwards;
   animation-delay: 1.5s;
   -webkit-animation-delay: 1.5s;
   -moz-animation-delay: 1.5s;
