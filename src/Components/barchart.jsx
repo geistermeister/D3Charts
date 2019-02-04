@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import * as d3 from 'd3'
+import propTypes from 'prop-types'
 
 export default class BarChart extends Component {
 
@@ -111,4 +112,10 @@ export default class BarChart extends Component {
   render() {
     return <svg className='svgBarChart'></svg>
   }
+}
+
+BarChart.propTypes = {
+  data: propTypes.array.isRequired,
+  width: propTypes.number.isRequired,
+  height: propTypes.number.isRequired
 }

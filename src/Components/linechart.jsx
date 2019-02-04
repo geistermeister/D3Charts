@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import * as d3 from 'd3'
+import propTypes from 'prop-types'
 
 export default class LineChart extends Component {
 
@@ -14,7 +15,7 @@ export default class LineChart extends Component {
     let parseTime = d3.timeParse('%d.%m.%Y')
     let colors = ['orange', 'blue', 'red', 'yellow', 'green']
     let buffer = []
-    let bufferline
+    let bufferLine = []
     let maxX = 0
     let data = this.props.data.data
     let keys = Object.keys(data[0])
@@ -39,9 +40,19 @@ export default class LineChart extends Component {
     let svg = d3.select('.svgLineChart')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
-      .append('g')
+      .attr('font-family', 'Sans-Serif')
+      .attr('font-size', 14)
+      
+      svg.append('g')
+      .attr('class', 'legend')
+      .attr('height', 100)
+      .attr('width', '100%')
+      
+      svg.append('g')
+      .attr('class', 'graph')
       .attr('transform',
             `translate(${margin.left},${margin.top})`)
+      
   
     let x = d3.scaleTime()
       .domain(d3.extent(buffer, d => d[0]))
@@ -49,20 +60,22 @@ export default class LineChart extends Component {
 
     
     let y = d3.scaleLinear()
-      .domain([0, maxX])
-      .range([height, 0])
+      .domain([0, maxX + 0.05 * height])
+      .range([height + 0.05 * height, 0])
 
 
     // splits data array into arrays
     // e.g. array[date, value1, value2] = array[date, value1] & array[date, value2] 
-    for(let i = 1; i < buffer[0].length; i++){
-      bufferline = []
+    for(let lineNr = 1; lineNr < buffer[0].length; lineNr++){
+      let fusionArray1 = []
       for(let j = 0; j < buffer.length; j++){
-        let fusionArray = []
-        fusionArray[0] = buffer[j][0]
-        fusionArray[1] = buffer[j][i]
-        bufferline.push(fusionArray)
+        let fusionArray2 = []
+        fusionArray2[0] = buffer[j][0]
+        fusionArray2[1] = buffer[j][lineNr]
+        fusionArray1.push(fusionArray2)
       }
+
+      bufferLine.push(fusionArray1)
 
       // define the line
       let line = d3.line()
@@ -70,26 +83,41 @@ export default class LineChart extends Component {
         .y(d => y(d[1]))
         .curve(d3.curveMonotoneX)
       
+
+      let legendPlacer = width / (keys.length) 
+
+      // add key to legend
+      svg.select('.legend')
+        .append('rect')
+        .attr('fill', () => (lineNr-1 > colors.length - 1) ? colors[colors.length -1] : colors[lineNr-1])
+        .attr('height', 10)
+        .attr('width', 40)
+        .attr('x', lineNr * legendPlacer - (keys[keys.length - 1].length / 2) * 8)
+        .attr('y', 20)
+      
+      svg.selectAll('.legend').append('text')
+        .text(keys[lineNr])
+        .attr('fill', () => (lineNr-1 > colors.length - 1) ? colors[colors.length -1] : colors[lineNr-1])
+        .attr('x', lineNr * legendPlacer - (keys[keys.length - 1].length / 2) * 8 + 50)
+        .attr('y', 30)
+
       // add the line
-      svg.append('g')
+      svg.select('.graph')
+      .append('g')
         .attr('class', 'lineContainer')
         .append('path')
-        .data([bufferline])
+        .data([bufferLine[lineNr-1]])
+        .attr('id', `line${lineNr}`)
         .attr('class', 'line')
         .attr('d', line)
         .attr('fill', 'none')
-        .attr('stroke', () => (i-1 > colors.length) ? colors[colors.length -1] : colors[i-1])
-        .attr('stroke-width', '1.5')
+        .attr('stroke', () => (lineNr-1 > colors.length - 1) ? colors[colors.length -1] : colors[lineNr-1])
+        .attr('stroke-width', '2.5')
         // append text for line when mouse over
         .on('mouseover', () => {
-          svg.append('text')
+          svg.select('.graph').append('title')
             .attr('class', 'title')
-            .attr('font-family', 'sans-serif')
-            .attr('font-weight', 'bold')
-            .attr('fill', colors[i-1])
-            .text(keys[i])
-            .attr('x', width/2)
-            .attr('y', -20)
+            .text(keys[lineNr])
         })
         .on('mouseout', () => {
           svg.select('.title').remove()
@@ -97,36 +125,35 @@ export default class LineChart extends Component {
         
       // add the dots  
       svg.selectAll('.lineContainer').selectAll('circle')
-        .data(bufferline).enter()
+        .data(bufferLine[lineNr-1]).enter()
         .append('circle')
         .attr('class', 'dot')
         .attr('cx', d => x(d[0]))
         .attr('cy', d => y(d[1]))
         .attr('r', '3')
-        .attr('fill', () => (i-1 > colors.length) ? colors[colors.length -1] : colors[i-1])
+        .attr('fill', () => (lineNr-1 > colors.length - 1) ? colors[colors.length -1] : colors[lineNr-1])
         // append text for line when mouse over
-        .on('mouseover', () => {
-          svg.append('text')
+        .on('mouseover', (d,i) => {
+          svg.select('.graph').append('title')
             .attr('class', 'title')
-            .attr('font-family', 'sans-serif')
-            .attr('font-weight', 'bold')
-            .attr('fill', colors[i-1])
-            .text(keys[i])
-            .attr('x', width/2)
-            .attr('y', -20)
+            .text(() => `${keys[lineNr]} Value: ${bufferLine[lineNr - 1][i][1]}`)
         })
         .on('mouseout', () => {
           svg.select('.title').remove()
         })  
     } 
 
+    let xAxsesPosition = height + 0.05 * height
+
     // add the x axis
-    svg.append('g')
-      .attr('transform', `translate(0,${height})`)
+    svg.select('.graph')
+    .append('g')
+      .attr('transform', `translate(0,${xAxsesPosition})`)
       .call(d3.axisBottom(x).tickFormat(d3.timeFormat('%d.%m.%Y')))
 
     // add the y axis
-    svg.append('g')
+    svg.select('.graph')
+    .append('g')
       .call(d3.axisLeft(y))
     
   }
@@ -134,4 +161,10 @@ export default class LineChart extends Component {
   render() {
     return <svg className='svgLineChart'></svg>
   }
+}
+
+LineChart.propTypes = {
+  data: propTypes.array.isRequired,
+  width: propTypes.number.isRequired,
+  height: propTypes.number.isRequired
 }
